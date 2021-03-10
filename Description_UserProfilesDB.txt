@@ -1,0 +1,17 @@
+			USER PROFILES DATABASE USED CASES
+
+Minimal Tables :
+User: This is a Table which contains three Columns named  User_ID (which is a PRIMARY KEY to this table) , User_Name , Age.
+This is the Main Table to the entire database named as userprofiles.
+
+ Address: This is the Address table which Contains the four columns House_Number , User_ID(which is the foreign key to this
+table and the Primary key to the main User table), Area, City.
+
+ContactInfo: Tis is the ContactInfo table which contains the Contact_Number and the PanDetails as the two columns to
+this sub-table of the user.
+Usecase :
+1. Create procedure/func to CRUD a user
+	This contains the entire Create, insert, Delete and Update operation for the user
+2.Create procedure to update user status to child, adult, senior provided his age is 0<>18<>60
+	A function named GetUsersStatus() is created which performs the entire operationof getting the user status.
+	Also the function is invoked to a procedure named InvokingUserAgeStatus().			
