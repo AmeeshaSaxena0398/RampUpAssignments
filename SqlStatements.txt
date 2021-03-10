@@ -1,0 +1,236 @@
+				 SQL STATEMENTS
+CREATION OF TABLE
+
+1. User:
+
+CREATE TABLE `user` (
+    `UserID` INT NOT NULL,
+    `User_Name` VARCHAR(45) NOT NULL,
+    `Age` INT NOT NULL,
+    PRIMARY KEY (`UserID`)
+); -- The main Parent table which has three columns and a Primary Key named UserID
+
+Address:
+
+CREATE TABLE `address` (
+    `House_Number` INT NOT NULL,
+    `UserID` INT NOT NULL,
+    `Area` VARCHAR(45) NOT NULL,
+    `City` VARCHAR(45) NOT NULL,
+    PRIMARY KEY (`House_Number`),
+    KEY `UserID_idx` (`UserID`),
+    CONSTRAINT `UserID` FOREIGN KEY (`UserID`)
+        REFERENCES `user` (`UserID`)
+); -- The main child table which has four columns and a Primary Key named House_Number and a foreign Key USerID
+
+ContactInfo:
+CREATE TABLE `contactinfo` (
+    `Contact_Number` VARCHAR(45) NOT NULL,
+    `PanDetails` VARCHAR(45) NOT NULL,
+    PRIMARY KEY (`Contact_Number`)
+); -- The child table which has two columns.
+
+SELECTION OF THE TABLE
+
+User:  SELECT * FROM userprofiles.user;
+Address: SELECT * FROM userprofiles.address;
+ContactInfo: SELECT * FROM userprofiles.contactinfo;
+
+			CRUD OPERATIONS USING STORED PROCEDURE
+
+Create And Read Operation
+
+-- create Procedure UserProc
+DELIMITER //
+CREATE PROCEDURE UserProc()
+BEGIN
+	SELECT * FROM User; -- Read the User Procedure
+END //
+DELIMITER ;
+---------------------------------------------------------------------------
+
+-- create Procedure AddressProc
+DELIMITER //
+CREATE PROCEDURE AddressProc()
+BEGIN
+	SELECT * FROM Address; -- Read the Address Procedure
+END //
+DELIMITER ;
+-----------------------------------------------
+-- Create the ContactInfo Procedure
+DELIMITER //
+CREATE PROCEDURE ContactInfoProc()
+BEGIN
+	SELECT * FROM contactinfo; -- Read the ContactInfo Procedure
+END //
+DELIMITER ;
+
+
+2 Insert Procedures
+
+-- Inserting Values with the help of InserUserProc() into user Table
+
+DELIMITER //
+CREATE PROCEDURE InsertUserProc(IN ID int, IN U_Name varchar(20), IN U_Age int)
+BEGIN
+INSERT INTO `userprofiles`.`user`
+(`UserID`,
+`User_Name`,
+`Age`)
+
+VALUES
+(ID, U_Name , U_Age);
+END //
+DELIMITER ;
+-----------------------------------------------------------------------------------------------------------
+
+-- Inserting Values with the help of InsertAddressProc() into address Table
+
+DELIMITER //
+CREATE PROCEDURE InsertAddressProc(IN HouseNo int, IN ID int , IN U_Area varchar(100), IN U_City varchar(20))
+BEGIN
+INSERT INTO `userprofiles`.`address`
+(`House_Number`,
+`UserID`,
+`Area`,
+`City`)
+VALUES(
+HouseNo , ID , U_Area , U_City
+);
+END //
+DELIMITER ;
+-----------------------------------------------------------------------------------------------------------
+
+-- Inserting Values with the help of InsertContactProc() into contactinfo Table
+
+DELIMITER //
+CREATE PROCEDURE InsertContactProc(IN U_ContactNo varchar(10), IN U_PanNo varchar(20))
+BEGIN
+INSERT INTO `userprofiles`.`contactinfo`
+(`Contact_Number`,
+`PanDetails`)
+VALUES
+(U_ContactNo, U_PanNo);
+
+
+END //
+DELIMITER ;
+--------------------------------------------------------------------------
+
+3) UPDATE Procedures
+
+DELIMITER //
+CREATE PROCEDURE UpdateUserProc()
+BEGIN
+DECLARE ID INT(10);
+DECLARE UserName VARCHAR(100);
+DECLARE UserAge INT(3);
+DECLARE cursorUser CURSOR FOR SELECT UserID , User_Name , Age FROM user;
+OPEN cursorUser;
+loop_User: LOOP
+FETCH cursorUser into ID, UserName , UserAge;
+IF UserName = 'Abhay' THEN
+UPDATE user SET User_Name = 'Akash' where UserID = ID; -- Update the procedure using cursors
+commit;
+END IF;
+END LOOP;
+CLOSE cursorUser;
+END //
+DELIMITER ;
+-------------------------------------------------------------
+
+DELIMITER //
+CREATE PROCEDURE UpdateAddressProc()
+BEGIN
+DECLARE HouseNumber INT(3);
+DECLARE ID INT(3);
+DECLARE Address_Area VARCHAR(100);
+DECLARE Address_City VARCHAR(100);
+DECLARE cursorAddress CURSOR FOR SELECT House_Number,UserID, Area, City FROM address;
+OPEN cursorAddress;
+loop_Address: LOOP
+FETCH cursorAddress into HouseNumber, ID , Address_Area, Address_City;
+IF Address_Area = 'Mall Road' THEN
+UPDATE address SET Area = 'PAC Road' where House_Number = HouseNumber; -- Update the Procedure using cursors
+commit;
+END IF;
+END LOOP;
+CLOSE cursorAddress;
+END //
+DELIMITER ;
+
+-----------------------------------------------------------------
+
+DELIMITER //
+CREATE PROCEDURE UpdateContactInfoProc()
+BEGIN
+
+DECLARE ContactNo VARCHAR(100);
+DECLARE PANNo VARCHAR(100);
+DECLARE cursorContactInfo CURSOR FOR SELECT Contact_Number, PanDetails FROM contactinfo;
+OPEN cursorContactInfo;
+loop_ContactInfo: LOOP
+FETCH cursorContactInfo into ContactNo , PANNo;
+IF ContactNo = '9451884176' THEN
+UPDATE contactinfo SET Contact_Number = '9451884177' where Contact_Number= ContactNo; -- Update the procedure using cursors
+commit;
+END IF;
+END LOOP;
+CLOSE cursorContactInfo;
+END //
+DELIMITER ;
+
+-------------------------------------------------------------
+
+4) Delete Procedure
+
+DELIMITER //
+CREATE PROCEDURE AddressDeleteQuery1(IN Add_city varchar(20))
+BEGIN
+	DELETE FROM address WHERE City= Add_city;-- Delete query Procedure from address table
+END //
+DELIMITER ;
+
+
+------------------------Function To Check the user Status---------------------------------------
+
+--Create Function
+DELIMITER //
+CREATE FUNCTION GetUsersStatus(Age INT(2) ) -- Function to get the User's Status
+RETURNS VARCHAR(100)
+DETERMINISTIC
+BEGIN
+DECLARE userStatus VARCHAR(100);
+IF Age > 0 && Age <= 18 THEN -- Condition to check whether the user is Child
+SET userStatus = 'CHILD';
+ELSEIF Age > 18 && Age <=60  THEN -- Condition to check whether the user is an Adult
+SET userStatus = 'ADULT';
+ELSEIF Age > 60  THEN -- Condition to check whether the user is a Senior Citizen
+SET userStatus = 'SENIOR';
+END IF;
+RETURN (userStatus);
+END//
+
+-----------------------------------Invoking Function into Procedure to get values---------------------------
+
+-- Proc that invokes a function 
+DELIMITER //
+CREATE PROCEDURE InvokingUserAgeStatus()
+BEGIN
+DECLARE userStatus VARCHAR(100);
+select Age into userStatus from user  where UserID = 114;
+SELECT CONCAT(GetUsersStatus(userStatus)); -- function- GetUsersStatus
+END //
+DELIMITER ;
+ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
